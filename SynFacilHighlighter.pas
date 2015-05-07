@@ -1,4 +1,4 @@
-{                               TSynFacilSyn 1.0b
+﻿{                               TSynFacilSyn 1.0b
 * Se elimina el campo "CarValFin" de "tFaTokContent"
 * Se elimina el campo "CharsToken" de "tFaTokContent"
 * Se cambian metTokCont1(), metTokCont2() ... , para que hagan una verificación
@@ -54,6 +54,11 @@ uses
   Classes, SysUtils, Graphics, SynEditHighlighter, DOM, XMLRead,
   Dialogs, Fgl, Lazlogger, SynEditHighlighterFoldBase, LCLIntf,
   SynFacilBasic;
+
+{$IFNDEF FPC_WINLIKEWIDESTRING}
+{$DEFINE HAS_NO_WIDESTRING_MANAGER}
+{$ENDIF}
+
 const
   COL_TRANSPAR = $FDFEFF;  //color transparente
 type
@@ -796,7 +801,11 @@ begin
   LangName := tName.val;
   Extensions := tExt.val;
   CaseSensitive := tCasSen.bol;
-  case UpCase(tColBlk.val) of  //coloreado de bloque
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+  case UpperCase(string(tColBlk.val)) of  //coloreado de bloque 
+  {$ELSE} 
+  case UpCase(tColBlk.val) of  //coloreado de bloque 
+  {$ENDIF}
   'LEVEL': ColBlock := cbLevel;
   'BLOCK': ColBlock := cbBlock;
   else ColBlock:= cbNull;
@@ -806,7 +815,11 @@ begin
   for i:= 0 to doc.DocumentElement.ChildNodes.Count - 1 do begin
      // Lee un Nodo o Registro
      nodo := doc.DocumentElement.ChildNodes[i];
-     nombre := UpCase(nodo.NodeName);
+     {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+     nombre := UpperCase(string(nodo.NodeName)); 
+     {$ELSE} 
+     nombre := UpCase(nodo.NodeName); 
+     {$ENDIF}
      if nombre = 'IDENTIFIERS' then begin
        defIDENTIF := true;      //hay definición de identificadores
        ////////// Lee parámetros //////////
@@ -825,7 +838,11 @@ begin
        ////////// explora nodos hijos //////////
        for j := 0 to nodo.ChildNodes.Count-1 do begin
          atri := nodo.ChildNodes[j];
-         nombre := UpCase(atri.NodeName);
+         {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+         nombre := UpperCase(string(atri.NodeName)); 
+         {$ELSE} 
+         nombre := UpCase(atri.NodeName); 
+         {$ENDIF}
          if nombre = 'TOKEN' then begin  //definición completa
            //lee atributos
            tAtrib:= ReadXMLParam(atri,'Attribute');
@@ -852,7 +869,11 @@ begin
        ////////// explora nodos hijos //////////
        for j := 0 to nodo.ChildNodes.Count-1 do begin
          atri := nodo.ChildNodes[j];
-         nombre := UpCase(atri.NodeName);
+         {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+         nombre := UpperCase(string(atri.NodeName)); 
+         {$ELSE} 
+         nombre := UpCase(atri.NodeName); 
+         {$ENDIF}
          if nombre = 'TOKEN' then begin  //definición completa
            //lee atributos
            tAtrib := ReadXMLParam(atri,'Attribute');
@@ -895,7 +916,11 @@ var
   Success: boolean;
   tEnd: TFaXMLatrib;
 begin
-  if UpCase(nodo.NodeName) <> 'BLOCK' then exit(false);
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+  if UpperCase(string(nodo.NodeName)) <> 'BLOCK' then exit(false); 
+  {$ELSE} 
+  if UpCase(nodo.NodeName) <> 'BLOCK' then exit(false); 
+  {$ENDIF}
   Result := true;  //encontró
   //Lee atributos
   tStart    := ReadXMLParam(nodo,'Start');
@@ -917,27 +942,51 @@ begin
   if tStart.hay then AddIniBlockToTok(tStart.val, 0, blq);
   if tEnd.hay   then AddFinBlockToTok(tEnd.val, 0, blq);
   if tBackCol.hay then begin //lee color
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    if UpperCase(string(tBackCol.val))='TRANSPARENT' then blq.BackCol:= COL_TRANSPAR 
+    {$ELSE} 
     if UpCase(tBackCol.val)='TRANSPARENT' then blq.BackCol:= COL_TRANSPAR
+    {$ENDIF}
     else blq.BackCol:= tBackCol.col;
   end;
   ////////// explora nodos hijos //////////
   for i := 0 to nodo.ChildNodes.Count-1 do begin
     nodo2 := nodo.ChildNodes[i];
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    if UpperCase(string(nodo2.NodeName))='START' then begin  //definición alternativa de delimitador 
+    {$ELSE} 
     if UpCAse(nodo2.NodeName)='START' then begin  //definición alternativa de delimitador
+    {$ENDIF}
       tTokPos := ReadXMLParam(nodo2,'TokPos');
       CheckXMLParams(nodo2, 'TokPos');
       //agrega la referecnia del bloque al nuevo token delimitador
-      AddIniBlockToTok(trim(nodo2.TextContent), tTokPos.n, blq);
-    end else if UpCAse(nodo2.NodeName)='END' then begin  //definición alternativa de delimitador
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      AddIniBlockToTok(trim(string(nodo2.TextContent)), tTokPos.n, blq); 
+      {$ELSE} 
+      AddIniBlockToTok(trim(nodo2.TextContent), tTokPos.n, blq); 
+      {$ENDIF}
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    end else if UpperCase(string(nodo2.NodeName))='END' then begin  //definición alternativa de delimitador 
+    {$ELSE} 
+    end else if UpCAse(nodo2.NodeName)='END' then begin  //definición alternativa de delimitador 
+    {$ENDIF}
       tTokPos := ReadXMLParam(nodo2,'TokPos');
       CheckXMLParams(nodo2, 'TokPos');
       //agrega la referecnia del bloque al nuevo token delimitador
-      AddFinBlockToTok(trim(nodo2.TextContent), tTokPos.n, blq);
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      AddFinBlockToTok(trim(string(nodo2.TextContent)), tTokPos.n, blq); 
+      {$ELSE} 
+      AddFinBlockToTok(trim(nodo2.TextContent), tTokPos.n, blq); 
+      {$ENDIF}
     end else if ProcXMLSection(nodo2, blq) then begin  //definición de sección
       //No es necesario procesar
     end else if ProcXMLBlock(nodo2, blq) then begin  //definición de bloque anidado
       //No es necesario procesar
-    end else if UpCase(nodo2.NodeName) = '#COMMENT' then begin
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    end else if UpperCase(string(nodo2.NodeName)) = '#COMMENT' then begin 
+    {$ELSE} 
+    end else if UpCase(nodo2.NodeName) = '#COMMENT' then begin 
+    {$ENDIF}
       //solo para evitar que de mensaje de error
     end else begin
       raise ESynFacilSyn.Create(Format(ERR_INVAL_LAB_BLK,[nodo2.NodeName]));
@@ -958,7 +1007,11 @@ var
   tTokenStart: TFaXMLatrib;
   Success: boolean;
 begin
-  if UpCase(nodo.NodeName) <> 'SECTION' then exit(false);
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+  if UpperCase(string(nodo.NodeName)) <> 'SECTION' then exit(false); 
+  {$ELSE} 
+  if UpCase(nodo.NodeName) <> 'SECTION' then exit(false); 
+  {$ENDIF}
   Result := true;  //encontró
   //lee atributos
   tStart    := ReadXMLParam(nodo,'Start');
@@ -993,23 +1046,39 @@ begin
     AddIniSectToTok(tTokenStart.val, 0, blq);
   end;
   if tBackCol.hay then begin
-    if UpCase(tBackCol.val)='TRANSPARENT' then blq.BackCol:= COL_TRANSPAR
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    if UpperCase(string(tBackCol.val))='TRANSPARENT' then blq.BackCol:= COL_TRANSPAR 
+    {$ELSE} 
+    if UpCase(tBackCol.val)='TRANSPARENT' then blq.BackCol:= COL_TRANSPAR 
+    {$ENDIF}
     else blq.BackCol:= tBackCol.col;   //lee color
   end;
   if tUnique.hay then blq.UniqSec:=tUnique.bol;  //lee Unique
   ////////// explora nodos hijos //////////
   for i := 0 to nodo.ChildNodes.Count-1 do begin
       nodo2 := nodo.ChildNodes[i];
-      if UpCAse(nodo2.NodeName)='START' then begin  //definición alternativa de delimitador
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      if UpperCase(string(nodo2.NodeName))='START' then begin  //definición alternativa de delimitador 
+      {$ELSE} 
+      if UpCAse(nodo2.NodeName)='START' then begin  //definición alternativa de delimitador 
+      {$ENDIF}
         tStartPos := ReadXMLParam(nodo2,'StartPos');
         CheckXMLParams(nodo2, 'StartPos');
         //agrega la referecnia del bloque al nuevo token delimitador
-        AddIniSectToTok(trim(nodo2.TextContent), tStartPos.n, blq);
+        {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+        AddIniSectToTok(trim(string(nodo2.TextContent)), tStartPos.n, blq); 
+        {$ELSE} 
+        AddIniSectToTok(trim(nodo2.TextContent), tStartPos.n, blq); 
+        {$ENDIF}
       end else if ProcXMLSection(nodo2, blq) then begin  //definición de sección
         //No es necesario procesar
       end else if ProcXMLBlock(nodo2, blq) then begin  //definición de bloque anidado
         //No es necesario procesar
-      end else if UpCase(nodo2.NodeName) = '#COMMENT' then begin
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      end else if UpperCase(string(nodo2.NodeName)) = '#COMMENT' then begin 
+      {$ELSE} 
+      end else if UpCase(nodo2.NodeName) = '#COMMENT' then begin 
+      {$ENDIF}
         //solo para evitar que de mensaje de error
       end else begin
         raise ESynFacilSyn.Create(Format(ERR_INVAL_LAB_SEC,[nodo2.NodeName]));
@@ -1049,7 +1118,11 @@ DebugLn(' === Cargando archivo de sintaxis ===');
     for i:= 0 to doc.DocumentElement.ChildNodes.Count - 1 do begin
        // Lee un Nodo o Registro
        nodo := doc.DocumentElement.ChildNodes[i];
-       nombre := UpCase(nodo.NodeName);
+       {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+       nombre := UpperCase(string(nodo.NodeName)); 
+       {$ELSE} 
+       nombre := UpCase(nodo.NodeName); 
+       {$ENDIF}
        if (nombre = 'IDENTIFIERS') or (nombre = 'SYMBOLS') or
           (nombre = 'ATTRIBUTE') or (nombre = 'COMPLETION') or
           (nombre = 'SAMPLE') or(nombre = '#COMMENT') then begin
@@ -1086,7 +1159,11 @@ DebugLn(' === Cargando archivo de sintaxis ===');
            p.AddInstruct(ToListRegex(tContent)+'*');
          end else if tRegex.hay then begin //definición de token por contenido con Regex
            CheckXMLParams(nodo, 'Start CharsStart Regex Attribute RegexMatch');
-           match := UpCase(tMatch.val)='COMPLETE';
+           {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+           match := UpperCase(string(tMatch.val))='COMPLETE'; 
+           {$ELSE} 
+           match := UpCase(tMatch.val)='COMPLETE'; 
+           {$ENDIF}
            if tStart.hay or tCharsStart.hay then begin //modo con delimitador
              dStart := dStartRegex(tStart, tCharsStart);  //extrae delimitador inicial
              p := DefTokContent(dStart, tipTok);
@@ -1111,7 +1188,11 @@ DebugLn(' === Cargando archivo de sintaxis ===');
              //Hasta aquí se creó un token por contenido. Explora sub-nodos
              for j := 0 to nodo.ChildNodes.Count-1 do begin
                nodo2 := nodo.ChildNodes[j];
-               if UpCAse(nodo2.NodeName)='REGEX' then begin  //instrucción
+               {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+               if UpperCase(string(nodo2.NodeName))='REGEX' then begin  //instrucción 
+               {$ELSE} 
+               if UpCAse(nodo2.NodeName)='REGEX' then begin  //instrucción 
+               {$ENDIF}
                  tText := ReadXMLParam(nodo2,'Text');
                  tIfTrue := ReadXMLParam(nodo2,'IfTrue');
                  tIfFalse := ReadXMLParam(nodo2,'IfFalse');
@@ -1362,17 +1443,29 @@ var i: integer;
 begin
   Result := nil;  //valor por defecto. Es un valor "válido".
   Success := false;
-  if UpCase(blk) = 'NONE' then begin
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+  if UpperCase(blk) = 'NONE' then begin 
+  {$ELSE} 
+  if UpCase(blk) = 'NONE' then begin 
+  {$ENDIF}
     Success := true;
     exit;
   end;
-  if UpCase(blk) = 'MAIN' then begin
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+  if UpperCase(blk) = 'MAIN' then begin 
+  {$ELSE} 
+  if UpCase(blk) = 'MAIN' then begin 
+  {$ENDIF}
     Result := MainBlk;
     Success := true;
     exit;
   end;
   for i := 0 to lisBlocks.Count-1 do
-    if Upcase(lisBlocks[i].name) = Upcase(blk) then begin
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    if Uppercase(lisBlocks[i].name) = Uppercase(blk) then begin 
+    {$ELSE} 
+    if Upcase(lisBlocks[i].name) = Upcase(blk) then begin 
+    {$ENDIF}
        Result := lisBlocks[i];  //devuelve referencia
        Success := true;
        exit;

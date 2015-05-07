@@ -1,4 +1,4 @@
-{                               SynFacilRegex
+﻿{                               SynFacilRegex
 Unidad con rutinas básicas de SynFacilSyn.
 Incluye la definición de la clase base: TSynFacilSynBase, que es la clase padre
 de TSYnFacilSyn.
@@ -13,6 +13,10 @@ interface
 uses
   SysUtils, Classes, SynEditHighlighter, strutils, Graphics, DOM, LCLIntf,
   SynEditHighlighterFoldBase, SynEditTypes;
+
+{$IFNDEF FPC_WINLIKEWIDESTRING}
+{$DEFINE HAS_NO_WIDESTRING_MANAGER}
+{$ENDIF}
 
 type
   ///////// Definiciones para manejo de tokens por contenido ///////////
@@ -965,11 +969,23 @@ begin
   Result.n:=0;         //si no encuentra devuelve 0
   for i:= 0 to n.Attributes.Length-1 do begin
     atri := n.Attributes.Item[i];
-    if UpCase(atri.NodeName) = UpCase(nomb) then begin
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    if UpperCase(string(atri.NodeName)) = UpperCase(string(nomb)) then begin 
+    {$ELSE} 
+    if UpCase(atri.NodeName) = UpCase(nomb) then begin 
+    {$ENDIF}
       Result.hay := true;          //marca bandera
       Result.val := atri.NodeValue;  //lee valor
-      Result.bol := UpCase(atri.NodeValue) = 'TRUE';  //lee valor booleano
-      cad := trim(atri.NodeValue);  //valor sin espacios
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      Result.bol := UpperCase(string(atri.NodeValue)) = 'TRUE';  //lee valor booleano 
+      {$ELSE} 
+      Result.bol := UpCase(atri.NodeValue) = 'TRUE';  //lee valor booleano 
+      {$ENDIF}
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      cad := trim(string(atri.NodeValue));  //valor sin espacios 
+      {$ELSE} 
+      cad := trim(atri.NodeValue);  //valor sin espacios 
+      {$ENDIF}
       //lee número
       if (cad<>'') and (cad[1] in ['0'..'9']) then  //puede ser número
         EsEntero(cad,Result.n); //convierte
@@ -981,7 +997,11 @@ begin
         EsHexa(copy(cad,6,2),b);
         Result.col:=RGB(r,g,b);
       end else begin  //constantes de color
-        case UpCase(cad) of
+        {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+        case UpperCase(cad) of 
+        {$ELSE} 
+        case UpCase(cad) of 
+        {$ENDIF}
         'WHITE'      : Result.col:=rgb($FF,$FF,$FF);
         'SILVER'     : Result.col:=rgb($C0,$C0,$C0);
         'GRAY'       : Result.col:=rgb($80,$80,$80);
@@ -1027,12 +1047,24 @@ begin
   //Realiza la verificación
   for i:= 0 to n.Attributes.Length-1 do begin
     atri := n.Attributes.Item[i];
-    nombre := UpCase(atri.NodeName);
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+    nombre := UpperCase(string(atri.NodeName)); 
+    {$ELSE} 
+    nombre := UpCase(atri.NodeName); 
+    {$ENDIF}
     //verifica existencia
     hay := false;
     for j:= 0 to lisTmp.Count -1 do begin
-      tmp := trim(lisTmp[j]);
-      if nombre = UpCase(tmp) then begin
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      tmp := trim(string(lisTmp[j])); 
+      {$ELSE} 
+      tmp := trim(lisTmp[j]); 
+      {$ENDIF}
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+      if nombre = UpperCase(string(tmp)) then begin
+      {$ELSE} 
+      if nombre = UpCase(tmp) then begin 
+      {$ENDIF}
          hay := true; break;
       end;
     end;
@@ -1358,7 +1390,11 @@ begin
   if txt = 'COMMENT'    then Result := tkComment
   else begin
     for i:=0 to AttrCount-1 do begin
-        if Upcase(Attribute[i].Name) = txt then
+        {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+        if Upcase(string(Attribute[i].Name)) = txt then 
+        {$ELSE} 
+        if Upcase(Attribute[i].Name) = txt then 
+        {$ENDIF}
           Result := Attribute[i];  //devuleve índice
     end;
   end;
@@ -1391,7 +1427,11 @@ var
   tipTok: TSynHighlighterAttributes;
   Atrib: TSynHighlighterAttributes;
 begin
-  if UpCase(nodo.NodeName) <> 'ATTRIBUTE' then exit(false);
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+  if UpperCase(string(nodo.NodeName)) <> 'ATTRIBUTE' then exit(false); 
+  {$ELSE} 
+  if UpCase(nodo.NodeName) <> 'ATTRIBUTE' then exit(false); 
+  {$ENDIF}
   Result := true;  //encontró
   ////////// Lee parámetros //////////
   tName    := ReadXMLParam(nodo,'Name');
@@ -1422,7 +1462,11 @@ begin
      if tForeCol.hay then Atrib.Foreground:=tForeCol.col;
      if tFrameCol.hay then Atrib.FrameColor:=tFrameCol.col;
      if tFrameEdg.hay then begin
-       case UpCase(tFrameEdg.val) of
+       {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+       case UpCase(string(tFrameEdg.val)) of 
+       {$ELSE} 
+       case UpCase(tFrameEdg.val) of 
+       {$ENDIF}
        'AROUND':Atrib.FrameEdges:=sfeAround;
        'BOTTOM':Atrib.FrameEdges:=sfeBottom;
        'LEFT':  Atrib.FrameEdges:=sfeLeft;
@@ -1430,7 +1474,11 @@ begin
        end;
      end;
      if tFrameSty.hay then begin
-       case UpCase(tFrameSty.val) of
+       {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
+       case UpCase(string(tFrameSty.val)) of 
+       {$ELSE} 
+       case UpCase(tFrameSty.val) of 
+       {$ENDIF}
        'SOLID': Atrib.FrameStyle:=slsSolid;
        'DASHED':Atrib.FrameStyle:=slsDashed;
        'DOTTED':Atrib.FrameStyle:=slsDotted;
