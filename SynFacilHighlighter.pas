@@ -147,9 +147,9 @@ type
     procedure DefTokDelim(dStart, dEnd: string; tokTyp: TSynHighlighterAttributes;
       tipDel: TFaTypeDelim=tdUniLin; havFolding: boolean=false);
     procedure RebuildSymbols;
+    procedure LoadFromStream(S: TStream); virtual;
     procedure LoadFromFile(Arc: string); virtual;     //Para cargar sintaxis
-    procedure Rebuild; virtual;
-
+	procedure Rebuild; virtual;
     procedure AddIniBlockToTok(dStart: string; TokPos: integer; blk: TFaSynBlock);
     procedure AddFinBlockToTok(dEnd: string; TokPos: integer; blk: TFaSynBlock);
     procedure AddIniSectToTok(dStart: string; TokPos: integer; blk: TFaSynBlock);
@@ -1085,7 +1085,7 @@ begin
       end;
   end;
 end;
-procedure TSynFacilSyn.LoadFromFile(Arc: string);
+procedure TSynFacilSyn.LoadFromStream(S: TStream);
 //Carga una sintaxis desde archivo
 var
   doc     : TXMLDocument;
@@ -1110,7 +1110,7 @@ DebugLn(' === Cargando archivo de sintaxis ===');
   CreateAttributes;  //Limpia todos los atributos y crea los predefinidos.
   ClearMethodTables; //Limpia tabla de caracter inicial, y los bloques
   try
-    ReadXMLFile(doc, Arc);  //carga archivo de lenguaje
+    ReadXMLFile(doc, S);  //carga archivo de lenguaje
     ////////Primera exploración para capturar elementos básicos de la sintaxis/////////
     FirstXMLExplor(doc);  //Hace la primera exploración. Puede generar excepción.
     ///////////Segunda exploración para capturar elementos complementarios///////////
@@ -1220,11 +1220,33 @@ DebugLn(' === Cargando archivo de sintaxis ===');
   except
     on e: Exception do begin
       //completa el mensaje
-      e.Message:=ERROR_LOADING_ + Arc + #13#10 + e.Message;
+      e.Message:=ERROR_LOADING_ + 'XMLDoc' + #13#10 + e.Message;
       doc.Free;
       raise   //genera de nuevo
     end;
   end;
+end;
+
+
+procedure TSynFacilSyn.LoadFromFile(Arc: string);
+Var
+  ThisStream : TFileStream;
+begin
+  ThisStream := TFileStream.Create(Arc,fmOpenRead or fmShareDenyWrite);
+  try
+    try
+      LoadFromStream(ThisStream);
+     finally
+      ThisStream.Free;
+    end;
+   except
+    on e: Exception do 
+    begin
+      //completa el mensaje
+      e.Message:=ERROR_LOADING_ + Arc + #13#10 + e.Message;
+      raise   //genera de nuevo
+    end;    
+  end; 
 end;
 procedure TSynFacilSyn.Rebuild;
 {Configura los tokens delimitados de acuerdo a la sintaxis definida actualmente, de
