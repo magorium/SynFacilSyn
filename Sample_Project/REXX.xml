@@ -1,0 +1,405 @@
+<?xml version="1.0"?>
+<!--
+##############################################################################
+
+  Rexx scripting language definition file for Synfacil Syntax Highlighter
+
+##############################################################################
+Based on Regina Rexx interpreter library v3.9.1 manual
+URL: http://sourceforge.net/projects/regina-rexx/files/regina-documentation/3.9.1/
+
+Notes:
+- Rexx language constructs are functions
+- Some function/instruction parameters are actually static keywords which 
+  clashes with function names.
+- No correct label recognition (actually none at all implemented atm)
+- Predefined label recognition  not implemented
+- Labels are allowed to start with numbers (even floats)
+- Hex and binary numbers are enclosed in single or double quotes, ending
+  with letter "x" or "b". No working recognition implemented atm.
+- some global variables start with a dot. Not implemented atm.
+##############################################################################
+-->
+<Language Name="REXX" Ext="rexx" CaseSensitive="false">
+  <Sample>
+/*
+ * SimpleRexx test...
+ *
+ * You need to run the SimpleRexxExample first...
+ */
+
+Options FailAt 100
+
+Options Results
+
+/*
+ * Try to read the window title bar
+ */
+Address EXAMPLE_1 ReadTitle
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window title is 'Result
+
+/*
+ * Bad WINDOW command...
+ */
+Address EXAMPLE_1 "Window Display"
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window is now open'
+
+/*
+ * Open the window
+ */
+Address EXAMPLE_1 "Window Open"
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window is now open'
+
+/*
+ * Open the window
+ */
+Address EXAMPLE_1 "Window Open"
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window is now open'
+
+/*
+ * Try to read the window title bar
+ */
+Address EXAMPLE_1 ReadTitle
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window title is 'Result
+
+/*
+ * Hide the window
+ */
+Address EXAMPLE_1 "Window Close"
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window is now closed'
+
+/*
+ * Try to hide the window again
+ */
+Address EXAMPLE_1 "Window Close"
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'Window is now closed'
+
+/*
+ * Send a command that does not exist
+ */
+Address EXAMPLE_1 Junk
+
+if rc > 0 then say 'Error was 'EXAMPLE.LASTERROR
+else say 'The command worked!!!'
+
+/*
+ * Quit the program...
+ */
+Address EXAMPLE_1 Quit
+  </Sample>
+  
+
+  <!-- ATTRIBUTES -->
+  <Attribute Name="RexxConstant"     ForeCol="#6600cc" Bold="true"  Italic="false" Underline="false" Strikeout="false"> </Attribute>
+  <Attribute Name="RexxVariable"     ForeCol="Coral"   Bold="true"> </Attribute>
+  <Attribute Name="RexxFunction"     ForeCol="Brown"   Bold="true"> </Attribute>
+  <Attribute Name="Directive"        ForeCol="Red"     Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clRed     -->
+
+  <Attribute Name="Symbol"           ForeCol="Teal"    Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clTeal    -->
+  <Attribute Name="Number"           ForeCol="Olive"   Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clOlive   -->
+  <Attribute Name="Keyword"          ForeCol="Blue"    Bold="true"  Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clBLue    -->
+  <Attribute Name="String"           ForeCol="Purple"  Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clPurple  -->
+  <Attribute Name="Comment"          ForeCol="Green"   Bold="false" Italic="true"  Underline="false" Strikeout="false"> </Attribute> <!-- clGreen   -->
+
+
+  <!-- SYMBOLS -->
+
+  <symbols>
+  </symbols>  
+
+
+  <!-- STANDARD DEFINITIONS -->
+  
+  <Identifiers CharsStart= "A..Za..z_" Content = "A..Za..z0..9_"> 
+    <Keyword>
+      <!-- primary instruction keywords -->
+      <!--
+        The following is a list of basic instructions that are declared inside 
+        the subgroup RexxFunction:
+        - address
+        - arg
+        - trace
+        - upper
+      -->
+      <!-- "address" keyword parameters --> with input normal output append replace stem lifo fifo
+      <!-- address keyword commented because of clash with condition constant: "stream" -->
+      <!-- "call" + "signal" keyword parameters --> on off name
+      <!-- "do" keyword parameters/enhancements --> to by for forever while until
+      call
+      do end      
+      drop
+      exit
+      if then else
+      interpret
+      iterate
+      leave
+      nop
+      numeric     <!--digits--> <!--form--> scientific engineering <!--value--><!--fuzz-->
+      options
+      parse       caseless <!--upper--><!--lower--><!--arg--> <!--linein--> <!--pull--> source version <!--value--> <!--with--> var
+      procedure   expose
+      pull
+      push
+      queue
+      return
+      say
+      select when otherwise
+      signal
+    </Keyword>
+    <RexxConstant>
+      syntax halt error failure novalue notready lostdigits 
+    </RexxConstant>
+    <RexxVariable>
+      <!-- special variables, local -->
+      rc
+      result
+      sigl
+      <!-- special variables, global -->
+      <!-- ToDo: Problem, including dot messes up stems
+      .mn
+      .rc
+      .rs
+      .result
+      .line
+      .file
+      .endofline 
+      -->
+    </RexxVariable>
+    <RexxFunction>
+      <!-- ANSI -->
+      ABBREV
+      ABS
+      ADDRESS
+      ARG
+      B2X
+      BITAND
+      BITOR
+      BITXOR
+      C2D
+      C2X
+      CENTER
+      CENTRE
+      CHANGESTR
+      CHARIN
+      CHAROUT
+      CHARS
+      COMPARE
+      CONDITION
+      COPIES
+      COUNTSTR
+      DATATYPE
+      DATE
+      DELSTR
+      DELWORD
+      DIGITS
+      D2C
+      D2X
+      ERRORTEXT
+      FORM
+      FORMAT
+      FUZZ
+      INSERT
+      LASTPOS
+      LEFT
+      LENGTH
+      LINEIN
+      LINEOUT
+      LINES
+      MAX
+      MIN
+      OVERLAY
+      POS
+      QUALIFY
+      QUEUED
+      RANDOM
+      REVERSE
+      RIGHT
+      SIGN
+      SOURCELINE
+      SPACE
+      STREAM
+      STRIP
+      SUBSTR
+      SUBWORD
+      SYMBOL
+      TIME
+      TRACE
+      TRANSLATE
+      TRUNC
+      VALUE
+      VERIFY
+      WORD
+      WORDINDEX
+      WORDLENGTH
+      WORDPOS
+      WORDS
+      XRANGE
+      X2B
+      X2C
+      X2D
+      <!-- AREXX -->
+      B2C
+      BITCHG
+      BITCLR
+      BITCOMP
+      BITSET
+      BITTST
+      C2B
+      CLOSE
+      COMPRESS
+      EOF
+      EXISTS
+      EXPORT
+      FREESPACE
+      GETSPACE
+      HASH
+      IMPORT
+      OPEN
+      RANDU
+      READCH
+      READLN
+      SEEK
+      SHOW
+      STORAGE
+      TRIM
+      UPPER
+      WRITECH
+      WRITELN
+      <!-- CMS -->
+      BUFTYPE
+      DESBUF
+      DROPBUF
+      FIND
+      INDEX
+      JUSTIFY
+      MAKEBUF
+      SLEEP
+      STATE
+      <!-- OS/2 -->
+      BEEP
+      DIRECTORY
+      FILESPEC
+      RXQUEUE
+      <!-- Regina -->
+      CD
+      CHDIR
+      CRYPT
+      FORK
+      GETCALLER
+      GETCALLSTACK
+      GETENV
+      GETPID
+      GETTID
+      LOWER
+      POOLID
+      POPEN
+      PUTENV
+      RXFUNCERRMSG
+      UNAME
+      UNIXERROR
+      <!-- UPPER = see AREXX UPPER -->
+      USERID
+      <!-- SAA -->
+      RXFUNCADD
+      RXFUNCDROP
+      RXFUNCQUERY
+    </RexxFunction>
+  </Identifiers>   
+    <!-- 
+    <Keyword2>
+       Todo: predefined labels, unable to detect properly ?
+      error:
+      failure:
+      halt:
+      syntax:    
+    </Keyword3>
+    -->
+
+  <!-- CUSTOMIZATION -->
+
+  <!-- Comment, Single line (regina v3.4) -->
+  <Comment Start="--"></Comment>
+  <!-- Comment, Multi line -->
+  <Comment Start="/*"    End="*/" Multiline="true"></Comment>
+
+
+  <!-- Strings -->
+  <String Start="&quot;" End="&quot;" Multiline="true"></String>
+  <String Start="'"      End="'"      Multiline="true"></String>
+
+  <!-- Preprocessor directive -->
+  <Token Start="#" Content = "A..Za..z0..9" Attribute='Directive'> </Token>
+
+
+
+  <!-- hex numbers -->
+  <!-- Token Start="'" Content="0..9abcdefABCDEFF'x" Attribute="Number"></Token -->
+  <!-- Token Start="'" Regex="[0123456789abcdef ]+'x" Attribute='HexNumber'> </Token -->  
+  <!-- Token Start="'" Regex="[0123456789abcdef ]+'x" RegexMatch="Complete" Attribute='Number'> </Token -->
+
+
+
+  <!-- Match Hexadecimal number, single and double quote enclosed -->
+  <!-- Note that this must be done _after_ usual string comparision, otherwise it messes up things -->
+  <Token Start="'"      Regex="[0-9a-zA-Z ]+'x"      RegexMatch="Complete" Attribute='Number'> </Token>
+  <Token Start="&quot;" Regex="[0-9a-zA-Z ]+&quot;x" RegexMatch="Complete" Attribute='Number'> </Token>
+
+  <!-- Match Binary number, single and double quote enclosed -->
+  <!-- Note that this must be done _after_ usual string comparision, otherwise it messes up things -->
+  <!--
+  <Token Start="'"      Regex="[0-1 ]+'b"      RegexMatch="Complete" Attribute='Number'> </Token>
+  <Token Start="&quot;" Regex="[0-1 ]+&quot;b" RegexMatch="Complete" Attribute='Number'> </Token>
+  -->
+
+  <!--
+  <Token Start="'"      Regex="[01 ]+'b"      RegexMatch="Complete" Attribute='Number'> </Token>
+  <Token Start="&quot;" Regex="[01 ]+&quot;b" RegexMatch="Complete" Attribute='Number'> </Token>
+  <Token Start="'"      Regex="[0-9][a-z ]+'x" RegexMatch="Complete" Attribute='Number'> </Token>
+  -->
+  <!--
+  <Token Start="'"      Regex="[01 ]+'b"      RegexMatch="Complete" Attribute='Number'> 
+    <Regex Text="[0-1]+" ></Regex>
+    <Regex Text="'b"     ></Regex>  
+  
+  </Token>
+  -->  
+  
+  
+
+  <!-- labels --> <!-- labels must be defined before numbers to avoid clash. Arexx allows numeric labels :-S -->
+  <!-- Token CharsStart="A..Za..z0..9_" End=":" Attribute='Label'></Token -->
+
+
+  <!-- Numbers -->
+  <!--
+  <Token CharsStart="0..9" Content = '0..9' Attribute="Number"> </Token>  
+  -->
+  <Number CharsStart="0..9" Content = '0..9.' Attribute="Number"> </Number>  
+
+  <!-- Preprocessor directive -->
+  <!-- Token Start="#" Content = "A..Za..z0..9" Attribute='Directive'> </Token -->
+
+
+  <!-- FOLDING BLOCKS + SECTIONS -->
+  
+  <Block Start="DO"    End= "END">
+  </Block>
+
+  <Section>
+  </Section>
+
+</Language>
