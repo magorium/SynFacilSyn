@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<!--
+##############################################################################
+
+  Hollywood scripting language definition file for Synfacil Syntax Highlighter
+
+##############################################################################
+Based on Hollywood 6.0 documentation
+URL: http://www.hollywood-mal.com/help.html
+
+Notes:
+- No functions, neither module functions
+- Preprocess directive is a generic declaration, e.g. not using actual
+  literal names. Can be specified in detail if required.
+- Hollywood defines some global constants, which is currently defined
+  in a generic constant match not using literal constant names. Can be 
+  specified in detail if required.
+##############################################################################
+-->
+<Language name="Hollywood" ext="hws">
+  <Sample>
+; this is a comment
+
+/* this is a 
+multiline
+comment */
+
+@BGPIC 1, "FancyBackground.jpg" ; a preprocessor commmand + string
+
+a$ = [[ This
+is a
+multiline string
+]]
+
+t = GetMonitors()
+For Local k = 0 To ListItems(t) - 1
+   DebugPrint("Monitor", k + 1, "X:", t[k].X, "Y:", t[k].Y,
+        "Width:", t[k].Width, "Height:", t[k].Height)
+Next
+
+mathlib = {}  ; create an empty table
+
+#FLIPPERFLOP
+
+Function p_MyFunc(msg)
+    Switch msg.action
+    Case "OnMouseUp":
+            DebugPrint("Left mouse button pressed:", msg.id)
+    Case "OnRightMouseUp":
+            DebugPrint("Right mouse button pressed:", msg.id)
+    EndSwitch
+EndFunction
+
+Function mathlib.add(a, b)
+    Return(a + b)
+EndFunction
+
+Print("Hello World!")
+
+MakeButton(1, #SIMPLEBUTTON, 0, 0, 100, 100, {OnMouseUp = p_MyFunc})
+MakeButton(2, #SIMPLEBUTTON, 200, 0, 100, 100, {OnMouseUp = p_MyFunc})
+
+End()  ; Exit
+
+a = mathlib.mul(5, 10)  ; a receives the value 50
+  </Sample>
+
+
+  <!-- ATTRIBUTES -->
+
+  <Attribute Name="Constant"         ForeCol="#6600cc" Bold="true"  Italic="false" Underline="false" Strikeout="false"> </Attribute>
+  <!-- Attribute Name="Constant Define"  ForeCol="#00A0AA" Bold="true"  Italic="false" Underline="false" Strikeout="false"> </Attribute -->
+  <Attribute Name="Preprocessor"     ForeCol="Red"     Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clRed     -->
+
+  <Attribute Name="Symbol"           ForeCol="Teal"    Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clTeal    -->
+  <Attribute Name="Number"           ForeCol="Olive"   Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clOlive   -->
+  <Attribute Name="Keyword"          ForeCol="Blue"    Bold="true"  Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clBLue    -->
+  <Attribute Name="String"           ForeCol="Purple"  Bold="false" Italic="false" Underline="false" Strikeout="false"> </Attribute> <!-- clPurple  -->
+  <Attribute Name="Comment"          ForeCol="Green"   Bold="false" Italic="true"  Underline="false" Strikeout="false"> </Attribute> <!-- clGreen   -->
+
+
+  <!-- Attribute Name="PREPROCESSOR" ForeCol="#FF0000"></Attribute -->
+  <!-- Attribute Name="DIRECTIVE"    ForeCol="#00FF00"></Attribute -->
+  <!-- Attribute Name="String"       ForeCol="#00FFFF" Bold="True" ></Attribute -->
+
+  <!-- SYMBOLS -->
+
+  <Symbols>
+  </Symbols>
+
+
+  <!-- STANDARD DEFINITIONS -->
+  
+  <Identifiers CharsStart= "A..Za..z_" Content = "A..Za..z0..9_#$"> 
+    <Keyword>
+      And
+      Block Break
+      Case Const Continue
+      Default Dim DimStr Do
+      Else ElseIf EndBlock EndFunction EndIf EndSwitch
+      For Forever Function 
+      Global Gosub Goto
+      If In
+      Label Local
+      Next Not
+      Or
+      Repeat Return 
+      Step Switch
+      Then To
+      Until
+      Wend While
+      Xor
+    </Keyword>
+    <Constant>
+      False
+      Nil
+      True
+    </Constant>
+  </Identifiers>
+
+  
+  <!-- CUSTOMIZATION -->
+
+  <!-- Preprocessor directive -->
+  <Token CharsStart="@"    Content = "A..Za..z0..9" Attribute='Preprocessor'> </Token>
+
+  <!-- Constant symbol -->
+  <Token CharsStart="#"    Content = "A..Za..z0..9_" Attribute='Constant'> </Token>
+  
+  <!-- Numbers: decimal (float) and hexadecimal -->
+  <Token CharsStart="$"    Content = '0..9abcdefABCDEF' Attribute="Number"> </Token>
+  <Token CharsStart="0..9" Content = '0..9.' Attribute="Number"> </Token>
+  
+  <!--- Strings -->
+  <String Start="&quot;" End="&quot;"></String>
+  <String Start="[["     End="]]" Multiline="true" Folding="true"></String>
+
+  <!--- Character constants -->
+  <String Start="'"      End="'"></String>
+
+  <!--- Comment, Single line -->
+  <Comment Start=";" ></Comment>
+
+  <!--- Comment Multi line -->
+  <Comment Start="/*"    End="*/" Multiline="true"></Comment>
+
+
+  <!-- FOLDING BLOCKS + SECTIONS -->
+
+  <Block Name="Func" Start="function" End="endfunction" Parent="Main">
+    <Block Name="FuncParam" Start="(" End=")" Folding="false"></Block>
+  </Block>
+
+  <Block Start="Block"  End= "EndBlock" ></Block>
+  <Block Start="For"    End= "Next" ></Block>
+  <Block Start="Repeat" End= "Until" ></Block>
+  <Block Start="Switch" End= "EndSwitch" ></Block>
+  <Block Start="While"  End= "Wend" ></Block>
+
+</Language>
