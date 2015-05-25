@@ -329,6 +329,7 @@ Address EXAMPLE_1 Quit
     </Keyword3>
     -->
 
+
   <!-- CUSTOMIZATION -->
 
   <!-- Comment, Single line (regina v3.4) -->
@@ -337,26 +338,15 @@ Address EXAMPLE_1 Quit
   <Comment Start="/*"    End="*/" Multiline="true"></Comment>
 
 
-  <!-- Strings -->
-  <String Start="&quot;" End="&quot;" Multiline="true"></String>
-  <String Start="'"      End="'"      Multiline="true"></String>
-
   <!-- Preprocessor directive -->
   <Token Start="#" Content = "A..Za..z0..9" Attribute='Directive'> </Token>
-
-
-
-  <!-- hex numbers -->
-  <!-- Token Start="'" Content="0..9abcdefABCDEFF'x" Attribute="Number"></Token -->
-  <!-- Token Start="'" Regex="[0123456789abcdef ]+'x" Attribute='HexNumber'> </Token -->  
-  <!-- Token Start="'" Regex="[0123456789abcdef ]+'x" RegexMatch="Complete" Attribute='Number'> </Token -->
-
 
 
   <!-- Match Hexadecimal number, single and double quote enclosed -->
   <!-- Note that this must be done _after_ usual string comparision, otherwise it messes up things -->
   <Token Start="'"      Regex="[0-9a-zA-Z ]+'x"      RegexMatch="Complete" Attribute='Number'> </Token>
   <Token Start="&quot;" Regex="[0-9a-zA-Z ]+&quot;x" RegexMatch="Complete" Attribute='Number'> </Token>
+
 
   <!-- Match Binary number, single and double quote enclosed -->
   <!-- Note that this must be done _after_ usual string comparision, otherwise it messes up things -->
@@ -374,21 +364,20 @@ Address EXAMPLE_1 Quit
   <Token Start="'"      Regex="[01 ]+'b"      RegexMatch="Complete" Attribute='Number'> 
     <Regex Text="[0-1]+" ></Regex>
     <Regex Text="'b"     ></Regex>  
-  
   </Token>
   -->  
-  
-  
 
   <!-- labels --> <!-- labels must be defined before numbers to avoid clash. Arexx allows numeric labels :-S -->
   <!-- Token CharsStart="A..Za..z0..9_" End=":" Attribute='Label'></Token -->
 
+  <!-- Strings _must_ be after hex/bin numbers, otherwise it messes up teh highlighting -->
+  <!-- Strings -->
+  <String Start="&quot;" End="&quot;" Multiline="true"></String>
+  <String Start="'"      End="'"      Multiline="true"></String>
+
 
   <!-- Numbers -->
-  <!--
-  <Token CharsStart="0..9" Content = '0..9' Attribute="Number"> </Token>  
-  -->
-  <Number CharsStart="0..9" Content = '0..9.' Attribute="Number"> </Number>  
+  <Token CharsStart="0..9" Content = '0..9.' Attribute="Number"> </Token>  
 
   <!-- Preprocessor directive -->
   <!-- Token Start="#" Content = "A..Za..z0..9" Attribute='Directive'> </Token -->
